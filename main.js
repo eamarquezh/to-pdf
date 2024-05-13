@@ -42,8 +42,8 @@ let dataObjWork = [];
 
 datos()
 .then(data => {
-console.log(data[0].education)
-    downloadResumen(data[0].work, data[0].education)
+console.log(data[0].certificates)
+    downloadResumen(data[0].work, data[0].education,data[0].certificates)
     
     //readEducation(data[0].education);
     //readCertificates(data[0].certificates);
@@ -56,7 +56,7 @@ console.log(data[0].education)
 
 
 
-const downloadResumen=(work,education)=>{
+const downloadResumen=(work,education,certificates)=>{
 const doc = new jsPDF();
 
 // Agregar foto (reemplaza 'ruta/a/imagen.jpg' con la URL de tu foto)
@@ -94,8 +94,7 @@ doc.setFontSize(10);
 
 work.map((a)=>{
     position +=10
-    doc.text(`${a.summary} in the role of "${a.position}"
-    at ${a.name} from ${a.startDate.substring(0,7)} to ${a.endDate.substring(0,7)})`, 5, position)
+    doc.text(`${a.summary} in the role of "${a.position}" \nat ${a.name} from ${a.startDate.substring(0,7)} to ${a.endDate.substring(0,7)}`, 5, position)
 })
 
 position +=20
@@ -107,10 +106,31 @@ doc.setFontSize(10);
 
 education.map((a)=>{
     position +=10
-    doc.text(`${a.summary} in the role of "${a.position}"
-    at ${a.name} from ${a.startDate.substring(0,7)} to ${a.endDate.substring(0,7)})`, 5, position)
+    doc.text(`${a.area} at ${a.institution} from ${a.startDate.substring(0,7)} to ${a.endDate.substring(0,7)}`, 5, position)
 })
 
+
+doc.setFont('helvetica', 'normal'); 
+doc.setFontSize(8);
+let positionX = 5
+let largeString = 0
+position +=10
+
+certificates.map((a)=>{
+  console.log(positionX+'-'+(`${a.name}(${a.startDate.substring(0,7)}), `).length)
+  if(positionX<140)
+  {
+    doc.text(`${a.name}(${a.startDate.substring(0,7)}), `, positionX, position)
+    largeString = (`${a.name}(${a.startDate.substring(0,7)}), `).length
+    positionX += largeString + 3
+  }else{
+    doc.text(`\n${a.name}(${a.startDate.substring(0,7)}), `, positionX, position)
+    positionX=5
+    position +=5
+  }
+
+  
+})
 
 // Guardar el documento PDF como archivo
 doc.save('cv_ejemplo.pdf');
